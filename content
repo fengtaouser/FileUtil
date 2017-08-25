@@ -1,0 +1,633 @@
+package com.zgszsf.sflxzd.utils;
+
+import android.os.Environment;
+import android.util.Log;
+
+import com.zgszsf.sflxzd.bean.ConfigureBean;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+/**
+ * Created by Administrator on 2017-04-07.
+ */
+
+public class FileUtiles {
+
+    public static String basePath="/ssxh/HBMS1/";
+    public final static String MoNiBasePath="/mnt/shared/Other/ssxh/HBMS1/";
+
+
+
+    public static String getText(String path){
+        BufferedReader bufferedReader=null;
+        try {
+            bufferedReader = new BufferedReader((new InputStreamReader(new FileInputStream(path),"GB2312")));
+            String line="";
+            String s = null;
+            while((s = bufferedReader.readLine())!=null) {//使用readLine方法，一次读一行
+                    line=line+s;
+            }
+            bufferedReader.close();
+            return line;
+
+        } catch (FileNotFoundException e) {
+
+                try {
+                    if (bufferedReader!=null)
+                    bufferedReader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            e.printStackTrace();
+        } catch (IOException e) {
+            try {
+                if (bufferedReader!=null)
+                    bufferedReader.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String getTextUTF_8(String path){
+        BufferedReader bufferedReader=null;
+        try {
+            bufferedReader = new BufferedReader((new InputStreamReader(new FileInputStream(path),"UTF-8")));
+            String line="";
+            String s = null;
+            while((s = bufferedReader.readLine())!=null) {//使用readLine方法，一次读一行
+                line=line+s;
+            }
+            bufferedReader.close();
+            return line;
+
+        } catch (FileNotFoundException e) {
+
+            try {
+                if (bufferedReader!=null)
+                    bufferedReader.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        } catch (IOException e) {
+            try {
+                if (bufferedReader!=null)
+                    bufferedReader.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
+
+    /**
+     * 读取指定行
+     * @param path  路径
+     * @param len  行
+     * @return
+     */
+    public static String getText(String path ,int len){
+        BufferedReader bufferedReader=null;
+        try {
+            bufferedReader = new BufferedReader((new InputStreamReader(new FileInputStream(path),"GB2312")));
+            String line="";
+            String s = null;
+            int i=1;
+            while((s = bufferedReader.readLine())!=null) {//使用readLine方法，一次读一行
+                line=line+s;
+                if (i==len){
+                    bufferedReader.close();
+                    return s;
+                }
+                i++;
+            }
+            bufferedReader.close();
+            return line;
+
+        } catch (FileNotFoundException e) {
+
+            try {
+                if (bufferedReader!=null)
+                    bufferedReader.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        } catch (IOException e) {
+            try {
+                if (bufferedReader!=null)
+                    bufferedReader.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * 获取全局配置
+     * @param key
+     * @return
+     */
+    public static String getGlobal(String key){
+
+        BufferedReader reader=null;
+        try {
+            reader = new BufferedReader(new FileReader(getRes()+"Global.txt"));
+            String s = null;
+            while((s = reader.readLine())!=null) {//使用readLine方法，一次读一行
+                String s1 = s.split("=")[0];
+                if (s1.equals(key)){
+                    reader.close();
+                    return s.split("=")[1];
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader!=null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }
+
+
+    /**
+     * 获取配置
+     * @param path   路径文件
+     * @param key
+     * @return
+     */
+    public static String getGlobal(String path,String key){
+
+        BufferedReader reader=null;
+        try {
+            reader = new BufferedReader(new FileReader(path));
+            String s = null;
+            while((s = reader.readLine())!=null) {//使用readLine方法，一次读一行
+                String s1 = s.split("=")[0];
+                if (s1.equals(key)){
+                    reader.close();
+                    return s.split("=")[1];
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader!=null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return "";
+    }
+
+
+    /**
+     * 获取配置
+     * @param key
+     * @return
+     */
+    public static String getConfigure(String path,String key){
+        String rr="";
+        BufferedReader reader=null;
+        try {
+            reader = new BufferedReader(new FileReader(path+"Configure.txt"));
+            String s = null;
+            while((s = reader.readLine())!=null) {//使用readLine方法，一次读一行
+                String[] split = s.split("=");
+                String s1 = split[0].trim();
+                if (key.compareTo(s1)==0){
+                    reader.close();
+                    return split[1];
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader!=null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return rr;
+    }
+
+
+    /**
+     *读取配置文件资料
+     * @param path  路径
+     * @return
+     */
+    public static  List<ConfigureBean>  getConfigure(String path){
+        List<ConfigureBean> list=new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path+"/Configure.rys"));//构造一个BufferedReader类来读取文件
+            String s = null;
+            while((s = br.readLine())!=null){//使用readLine方法，一次读一行
+                    br.close();
+                JSONArray jsonArray = new JSONArray(s);
+                for (int i=0;i<jsonArray.length();i++){
+                    JSONObject object = jsonArray.getJSONObject(i);
+                    ConfigureBean configureBean = new ConfigureBean();
+                    configureBean.name=object.getString("name");
+                    configureBean.path=object.getString("path");
+                    configureBean.position=object.getInt("position");
+                    configureBean.viewType=object.getInt("viewType");
+                    list.add(configureBean);
+                }
+                Collections.sort(list, new Comparator<ConfigureBean>() {
+                    @Override
+                    public int compare(ConfigureBean o1, ConfigureBean o2) {
+                        return o1.position-o2.position;
+                    }
+                });
+                return list;
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static String getFile(){
+//        return MoNiBasePath;
+        return  getSDPath()+basePath;
+    }
+
+    public static String getBaseFile(){
+        return getSDPath()+"/ssxh/";
+    }
+
+    public static  String getResImg(){
+
+        return getBaseFile()+"Resources/Image/";
+    }
+
+    public static  String getRes(){
+
+        return getBaseFile()+"Resources/";
+    }
+
+
+
+
+    /**
+     *
+     * 获取内部存储路径
+     * @return
+     */
+    public static String getAndroidPath(){
+
+        String extSdcardPath = System.getenv("SECONDARY_STORAGE");
+        return extSdcardPath;
+    }
+
+
+    /**
+     * 获取外部储存路径
+     * @return
+     */
+    public static String getSDPath(){
+        File sdDir = null;
+        boolean sdCardExist = Environment.getExternalStorageState()
+                .equals(android.os.Environment.MEDIA_MOUNTED); //判断sd卡是否存在
+        if (sdCardExist)
+        {
+            sdDir = Environment.getExternalStorageDirectory();//获取跟目录
+        }
+        return sdDir.toString();
+    }
+
+
+
+    /**
+     * 复制单个文件
+     *
+     * @param oldPath String  原文件路径  如：c:/fqf.txt
+     * @param newPath String  复制后路径  如：f:/fqf.txt
+     * @return boolean
+     */
+    public static void copyFile(String oldPath, String newPath) {
+        try {
+            int byteread = 0;
+            File oldfile = new File(oldPath);
+            if (oldfile.exists()) {  //文件存在时
+                InputStream inStream = new FileInputStream(oldPath);  //读入原文件
+                FileOutputStream fs = new FileOutputStream(newPath);
+                byte[] buffer = new byte[1024];
+                while ((byteread = inStream.read(buffer)) != -1) {
+                    fs.write(buffer, 0, byteread);
+                }
+                inStream.close();
+            }
+        } catch (Exception e) {
+            System.out.println("复制单个文件操作出错");
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+    public static byte[] decrypt(byte[] content, String password) {
+        try {
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            kgen.init(128, new SecureRandom(password.getBytes()));
+            SecretKey secretKey = kgen.generateKey();
+            byte[] enCodeFormat = secretKey.getEncoded();
+            SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");
+            Cipher cipher = Cipher.getInstance("AES");// 创建密码器
+            cipher.init(Cipher.DECRYPT_MODE, key);// 初始化
+            byte[] result = cipher.doFinal(content);
+            return result; // 加密
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 数 mp4的个数
+     * @param path
+     * @return
+     */
+    public static int mp4Size(String path){
+        int size=0;
+        File file = new File(path);
+        for (File f:file.listFiles()) {
+            String name = f.getName();
+            if (name.length()>4){
+                String s = name.substring(name.length() - 4);
+                if (s.equals(".mp4")){
+                    size++;
+                }
+            }
+        }
+
+        return size;
+    }
+    /**
+     * 删除文件
+     */
+    public static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            //递归删除目录中的子目录下
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        // 目录此时为空，可以删除
+        return dir.delete();
+    }
+
+    /**
+     * 书法欣赏中 获取作者信息
+     * @param path
+     * @return
+     */
+    public static String getAuther(String path){
+        File file = new File(path);
+        try {
+            String encoding="GB2312";//编码格式
+            if(file.isFile() && file.exists()){ //判断文件是否存在
+                InputStreamReader read = new InputStreamReader(new FileInputStream(file),encoding);
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String text = "";
+                String auther = "";
+                while((auther = bufferedReader.readLine()) != null){
+                    text = text + auther;
+                }
+                read.close();
+                return text;
+            }else{
+                Log.i("读取碑帖作者    ","找不到指定的文件");
+            }
+        } catch (Exception e) {
+            Log.i("读取碑帖作者    ","读取文件内容出错");
+            e.printStackTrace();
+        }
+        return "";
+    }
+    /**
+     * 书法欣赏中 获取当前碑帖对应的译文
+     * @param path 文件绝对路径
+     * @return 去掉part_1和%
+     */
+
+
+    public static String getNotes(String path,int part){
+        File file = new File(path);
+        try {
+            String encoding="GB2312";//编码格式
+            if(file.isFile() && file.exists()){ //判断文件是否存在
+                InputStreamReader read = new InputStreamReader(new FileInputStream(file),encoding);
+                BufferedReader bufferedReader = new BufferedReader(read);
+                String text = "";
+                if (part <= 0 || part > getTotalLines(file)) {
+                    Log.i("读取碑帖译文    ","不在文件的行数范围");
+                }
+                int lines = 0;
+                while (text != null) {
+                    lines++;
+                    text = bufferedReader.readLine();
+                    int start = text.indexOf("part_");
+                    String newText = text.substring(start + 7);
+                    StringBuffer sb = new StringBuffer(newText);
+                    while (sb.toString().contains("%")) {
+                        int ln = sb.indexOf("%");
+                        sb.setCharAt(ln,'\n');
+                    }
+                    if((lines - part) == 0 && start != -1) {
+                        return sb.toString();
+                    }
+                }
+                read.close();
+            }else{
+                Log.i("读取碑帖译文    ","找不到指定的文件");
+            }
+        } catch (Exception e) {
+            Log.i("读取碑帖译文    ","读取文件内容出错");
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static int getTotalLines(File file) throws IOException {
+        FileReader in = new FileReader(file);
+        LineNumberReader reader = new LineNumberReader(in);
+        String s = reader.readLine();
+        int lines = 0;
+        while (s != null) {
+            lines++;
+            s = reader.readLine();
+            if(lines>=2){
+                if(s!=null){
+                    System.out.println(s+"$");
+                }
+            }
+        }
+        reader.close();
+        in.close();
+        return lines;
+    }
+    /**
+     * 获取欣赏小图
+     */
+    public static ArrayList<String> getSmallPicture(String strPath) {
+        ArrayList<String> list = new ArrayList<>();
+        File file = new File(strPath);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        File[] allfiles = file.listFiles();
+        if (allfiles == null) {
+            return null;
+        }
+        for(int k = 0; k < allfiles.length; k++) {
+            final File fi = allfiles[k];
+            if(fi.isFile() && fi.getName().contains("_small")) {
+                int idx = fi.getPath().lastIndexOf(".");
+                if (idx <= 0) {
+                    continue;
+                }
+                String suffix = fi.getPath().substring(idx);
+                if (suffix.toLowerCase().equals(".jpg")) {
+                    list.add(fi.getPath());
+                    Log.i("getSmallPicture",fi.getName());
+                }
+            }
+        }
+        return list;
+    }
+    /**
+     * 获取欣赏大图
+     */
+    public static ArrayList<String> getBigPicture(String strPath) {
+        ArrayList<String> list = new ArrayList<>();
+        File file = new File(strPath);
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        File[] allfiles = file.listFiles();
+        if (allfiles == null) {
+            return null;
+        }
+        for(int k = 0; k < allfiles.length; k++) {
+            final File fi = allfiles[k];
+            if(fi.isFile() && !fi.getName().contains("_small")) {
+                int idx = fi.getPath().lastIndexOf(".");
+                if (idx <= 0) {
+                    continue;
+                }
+                String suffix = fi.getPath().substring(idx);
+                if (suffix.toLowerCase().equals(".jpg")) {
+                    list.add(fi.getPath());
+                    Log.i("getBigPicture",fi.getName());
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param size 1 是小图 2是大图
+     * @return 排序后的list
+     */
+    public static ArrayList<String> sort(ArrayList<String> imageList,int size){
+        int smallEnd = 0,bigEnd = 0;
+        for(int i = 0;i < imageList.size() - 1;i++){
+            int star = imageList.get(i).lastIndexOf("part_");
+            if(size == 1){
+                smallEnd = imageList.get(i).lastIndexOf("_");
+                bigEnd = imageList.get(i + 1).lastIndexOf("_");
+            }else {
+                smallEnd = imageList.get(i).lastIndexOf(".");
+                bigEnd = imageList.get(i + 1).lastIndexOf(".");
+            }
+            if(smallEnd > star + 5){
+                String currposi = imageList.get(i).substring(star + 5,smallEnd);
+                String nextposi = imageList.get(i + 1).substring(star + 5,bigEnd);
+                if(((Integer.valueOf(currposi) > Integer.valueOf(nextposi)))){
+                    imageList.add(imageList.size(),imageList.get(i));
+                    imageList.remove(i);
+                }
+            }
+        }
+        return imageList;
+    }
+
+
+}
